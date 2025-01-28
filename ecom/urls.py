@@ -1,0 +1,30 @@
+
+
+from django.urls import path
+from .views import*
+
+urlpatterns = [
+    # ************************ Vendor Url ************************
+    path("vendor/", VendorAPI.as_view()),
+    path("vendor/<uuid:pk>/", VendorUpdateAPI.as_view()),
+
+    # ************************ Category Url ************************
+    path("category/", CategoryAPI.as_view()),
+    path("category/<uuid:pk>/", CategoryUpdateAPI.as_view()),
+
+    # ************************ Product Url ************************
+    path("product/", ProductAPI.as_view()),
+    path("product/<uuid:pk>/", ProductUpdateAPI.as_view()),
+
+    # ************************ Order Url ************************
+    path("order/", OrderAPI.as_view()),
+    path("order/<uuid:pk>/", OrderUpdateAPI.as_view()),
+
+    # ************************ Order Item Url ************************
+    path("orderitem/", OrderItemAPI.as_view()),
+    path("orderitem/<uuid:pk>/", OrderItemUpdateAPI.as_view()),
+
+    # ************************ Ledger Url ************************
+    path("ledger/", LedgerAPI.as_view()),
+    path("ledger/<uuid:pk>/", LedgerUpdateAPI.as_view())
+]
