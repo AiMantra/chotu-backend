@@ -19,13 +19,21 @@ class Vendors(models.Model):
     def __str__(self):
         return str(self.id)
 
-# Customer model to store basic details of the client
-class Client(models.Model):
+# Customer model to store basic details of the customer
+class Customer(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
     name = models.CharField(max_length=250, null=False, blank=False)
     email = models.EmailField(unique=True, null=False, blank=False)
     phone_number = models.CharField(max_length=15, unique=True, null=False, blank=False)
-    address = models.TextField(null=True, blank=True)
+    gender = models.CharField(max_length=10, null=True, blank=True, choices=UserGenderEnum.choices())   
+    dob = models.DateField(null=True, blank=True)
+    house_no = models.CharField(max_length=10, null=True, blank=True)
+    street = models.CharField(max_length=150,null=True,blank=True)
+    landmark = models.CharField(max_length=50, null=True, blank=True)
+    city = models.CharField(max_length=20, null=True, blank=True)
+    district = models.CharField(max_length=50, null=True, blank=True)
+    state = models.CharField(max_length=20, null=True, blank=True)
+    pincode = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -40,15 +48,38 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-# dISCOUNT, GST 
-# Products under categories
+class Coupon(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
+    code = models.CharField(max_length=50, unique=True, null=False, blank=False)
+    discount_type =  models.CharField(max_length=20, choices = DiscountTypeEnum.choices(), null=False, blank=False)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="customer_coupan")
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="coupan")
+    discount_value = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
+    min_order_value = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Minimum order value required to apply the coupon.")
+    max_discount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Maximum discount allowed for percentage-based coupons.")
+    valid_from = models.DateTimeField(null=False, blank=False)
+    valid_to = models.DateTimeField(null=False, blank=False)
+    usage_limit = models.PositiveIntegerField(default=1, help_text="Total number of times this coupon can be used.")
+    used_count = models.PositiveIntegerField(default=0, help_text="Number of times the coupon has been used.")
+    is_active = models.BooleanField(default=True)
+
+    def is_valid(self):
+        """
+        Checks if the coupon is still valid (within the date range and usage limit).
+        """
+        from django.utils.timezone import now
+        return self.is_active and (self.valid_from <= now() <= self.valid_to) and (self.used_count < self.usage_limit)
+
+    def __str__(self):
+        return f"{self.code} - {self.discount_type} ({self.discount_value})"
+
 class Product(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
     name = models.CharField(max_length=250, null=False, blank=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
     price = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
     stock = models.IntegerField(default=0)
-    discount = models.CharField(max_length=250, null=False, blank=False)
+    discount = models.ForeignKey(Coupon, on_delete=models.CASCADE, related_name="orders")
     gst = models.CharField(max_length=250, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -59,7 +90,7 @@ class Product(models.Model):
 class Order(models.Model):
 
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="orders")
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="orders")
     order_type = models.CharField(max_length=20, choices = OrderTypeEnum.choices(), null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -81,7 +112,7 @@ class OrderItem(models.Model):
 # Ledger for user transactions
 class Ledger(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="ledger")
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="ledger")
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="ledger_entries", null=True, blank=True)
     debit = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)  # Amount deducted
     credit = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)  # Amount added
@@ -89,7 +120,7 @@ class Ledger(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Ledger Entry {self.id} for Client {self.client.name}"
+        return f"Ledger Entry {self.id} for Customer {self.customer.name}"
 
 
 

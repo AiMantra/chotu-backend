@@ -8,6 +8,16 @@ urlpatterns = [
     path("vendor/", VendorAPI.as_view()),
     path("vendor/<uuid:pk>/", VendorUpdateAPI.as_view()),
 
+    # ? ************************ Customer Url ************************
+    path("customer/",CustomerAPI.as_view()),
+    path("allcustomer/",AllCustomerDataAPI.as_view()),
+    path("customerupdate/<str:pk>/",CustomerUpdateAPI.as_view()),
+
+    # ? ************************ Coupon Url ************************
+    path("coupon/",CouponAPI.as_view()),
+    path("allcoupon/",AllCouponDataAPI.as_view()),
+    path("couponupdate/<str:pk>/",CouponUpdateAPI.as_view()),
+
     # ************************ Category Url ************************
     path("category/", CategoryAPI.as_view()),
     path("category/<uuid:pk>/", CategoryUpdateAPI.as_view()),

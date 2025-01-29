@@ -9,3 +9,23 @@ class OrderTypeEnum(Enum):
     @classmethod
     def choices(cls):
         return [(key.value, key.name) for key in cls]
+
+class DiscountTypeEnum(Enum):
+    
+    Fixed = "fixed"
+    Percentage = "percentage"
+    FirstOrder = "firstorder"
+    CategoryDiscout = "categorydiscount"
+    ReferralDiscount = "referraldiscount"
+    @classmethod
+    def choices(cls):
+        return [(key.value, key.name) for key in cls]
+
+class UserGenderEnum(Enum):
+    MALE = "male"
+    FEMALE = "female"
+    OTHER = "other"
+
+    @classmethod
+    def choices(cls):
+        return [(key.value, key.name) for key in cls]

@@ -7,10 +7,25 @@ class VendorSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 # Client Serializer
-class ClientSerializer(serializers.ModelSerializer):
+class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Client
+        model = Customer
         fields = '__all__'
+
+class AllCustomerDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ['id', 'name', 'pos']
+
+class CouponSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coupon
+        fields = '__all__'
+
+class AllCouponDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coupon
+        fields = ['id', 'discount_type', 'code']
 
 # Category Serializer
 class CategorySerializer(serializers.ModelSerializer):
