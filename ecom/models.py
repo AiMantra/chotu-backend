@@ -19,7 +19,7 @@ class Vendors(models.Model):
     def __str__(self):
         return str(self.id)
 
-# Client model to store basic details of the client
+# Customer model to store basic details of the client
 class Client(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
     name = models.CharField(max_length=250, null=False, blank=False)
@@ -40,6 +40,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+dISCOUNT, GST 
 # Products under categories
 class Product(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
