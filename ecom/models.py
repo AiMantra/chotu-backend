@@ -1,6 +1,8 @@
 from django.db import models
 import uuid
 from .utils import*
+from datetime import datetime
+
 
 # Vendor class for reference (already provided)
 class Vendors(models.Model):
@@ -19,30 +21,54 @@ class Vendors(models.Model):
     def __str__(self):
         return str(self.id)
 
+
+class ContactForm(models.Model):
+
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
+    name = models.CharField(max_length=150, null=True, blank=True)
+    email = models.EmailField(unique=True)
+    mobile = models.BigIntegerField(null=True, blank=True)
+    date_time = models.DateTimeField(auto_now_add=True)
+    form_type = models.CharField(max_length=20, null=True, blank=True, choices=TypeEnum.choices())
+    reply_remark = models.CharField(max_length=100, null=True, blank=True)
+    reply_date = models.DateField(null=True, blank=True)
+    reply_by = models.CharField(max_length=50, null=True, blank=True)
+    replied = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return str(self.id)
+
+class Address(models.Model):
+    id = models.UUIDField(default=uuid.uuid4,unique=True,editable=False,primary_key=True)
+    block_no = models.CharField(max_length=10, null=True, blank=True)
+    house_flat_no = models.CharField(max_length=10, null=True, blank=True)
+    street = models.CharField(max_length=150,null=True,blank=True)
+    landmark = models.CharField(max_length=50, null=True, blank=True)
+    
+
+    def __str__(self):
+        return str(self.house_no)+' '+str(self.street) 
+
 # Customer model to store basic details of the customer
 class Customer(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-    name = models.CharField(max_length=250, null=False, blank=False)
-    email = models.EmailField(unique=True, null=False, blank=False)
-    phone_number = models.CharField(max_length=15, unique=True, null=False, blank=False)
+    name = models.CharField(max_length=250, null=True, blank=True)
+    email = models.EmailField(unique=True, null=True, blank=True)
+    phone_number = models.CharField(max_length=15, unique=True, null=True, blank=True)
+    alternate_phone_number =  models.CharField(max_length=15, unique=True, null=True, blank=True)
     gender = models.CharField(max_length=10, null=True, blank=True, choices=UserGenderEnum.choices())   
     dob = models.DateField(null=True, blank=True)
-    house_no = models.CharField(max_length=10, null=True, blank=True)
-    street = models.CharField(max_length=150,null=True,blank=True)
-    landmark = models.CharField(max_length=50, null=True, blank=True)
-    city = models.CharField(max_length=20, null=True, blank=True)
-    district = models.CharField(max_length=50, null=True, blank=True) # ! not required in this project
-    state = models.CharField(max_length=20, null=True, blank=True) # ! not required in this project
-    pincode = models.IntegerField(null=True, blank=True) 
+    Address = models.ForeignKey(Address, on_delete=models.CASCADE, related_name="address",null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
 
+
 # Services for grocery and food
 class Services(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-    name = models.CharField(max_length=100, unique=True, null=False, blank=False)
+    name = models.CharField(max_length=100, unique=True, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -51,7 +77,8 @@ class Services(models.Model):
 # Categories for item inside Services
 class Category(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-    name = models.CharField(max_length=100, unique=True, null=False, blank=False)
+    name = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    pic = models.ImageField(upload_to = 'category',blank=True, null=True )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -59,15 +86,15 @@ class Category(models.Model):
 
 class Coupon(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-    code = models.CharField(max_length=50, unique=True, null=False, blank=False)
-    discount_type =  models.CharField(max_length=20, choices = DiscountTypeEnum.choices(), null=False, blank=False)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="customer_coupan")
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="coupan")
-    discount_value = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
+    code = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    discount_type =  models.CharField(max_length=20, choices = DiscountTypeEnum.choices(), null=True, blank=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="customer_coupan",null=True, blank=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="category_coupan",null=True, blank=True)
+    discount_value = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     min_order_value = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Minimum order value required to apply the coupon.")
     max_discount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Maximum discount allowed for percentage-based coupons.")
-    valid_from = models.DateTimeField(null=False, blank=False)
-    valid_to = models.DateTimeField(null=False, blank=False)
+    valid_from = models.DateTimeField(null=True, blank=True)
+    valid_to = models.DateTimeField(null=True, blank=True)
     usage_limit = models.PositiveIntegerField(default=1, help_text="Total number of times this coupon can be used.")
     used_count = models.PositiveIntegerField(default=0, help_text="Number of times the coupon has been used.")
     is_active = models.BooleanField(default=True)
@@ -84,23 +111,33 @@ class Coupon(models.Model):
 
 class Product(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-    name = models.CharField(max_length=250, null=False, blank=False)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
-    price = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
+    name = models.CharField(max_length=250, null=True, blank=True)
+    product_description = models.CharField(max_length=250, null=True, blank=True)
+    vendors = models.ForeignKey(Vendors, on_delete=models.CASCADE, related_name="vendors",null=True, blank=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="category_product",null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     stock = models.IntegerField(default=0)
-    discount = models.ForeignKey(Coupon, on_delete=models.CASCADE, related_name="orders")
-    gst = models.CharField(max_length=250, null=False, blank=False)
+    discount = models.ForeignKey(Coupon, on_delete=models.CASCADE, related_name="orders",null=True, blank=True)
+    gst = models.CharField(max_length=50, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
 
+class ProductImage(models.Model):
+
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True,  related_name="product_images") 
+    image = models.ImageField(upload_to = 'productimage',blank=True, null=True )
+    def __str__(self):
+        return str(self.id)
+
 # Orders with types (pre-placed and instant)
 class Order(models.Model):
 
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="orders")
-    order_type = models.CharField(max_length=20, choices = OrderTypeEnum.choices(), null=False, blank=False)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="orders",null=True, blank=True)
+    order_type = models.CharField(max_length=20, choices = OrderTypeEnum.choices(), null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -113,7 +150,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="order_items")
     quantity = models.PositiveIntegerField(default=1)
-    price = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
         return f"{self.product.name} (x{self.quantity})"
@@ -121,7 +158,7 @@ class OrderItem(models.Model):
 # Ledger for user transactions
 class Ledger(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="ledger")
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="ledger",null=True, blank=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="ledger_entries", null=True, blank=True)
     debit = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)  # Amount deducted
     credit = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)  # Amount added

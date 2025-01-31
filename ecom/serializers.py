@@ -6,7 +6,18 @@ class VendorSerializer(serializers.ModelSerializer):
         model = Vendors
         fields = '__all__'
 
-# Client Serializer
+class ContactFormSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactForm
+        fields = '__all__'
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = '__all__'
+
+
+# Customer Serializer
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
@@ -16,6 +27,11 @@ class AllCustomerDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = ['id', 'name', 'pos']
+
+class ServicesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Services
+        fields = '__all__'
 
 class CouponSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,6 +51,20 @@ class CategorySerializer(serializers.ModelSerializer):
 
 # Product Serializer
 class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = '__all__'
+
+
+
+class ProductByProductSerializer(serializers.ModelSerializer):
+    product_images_product = ProductImageSerializer(many=True, read_only=True)
+
     class Meta:
         model = Product
         fields = '__all__'

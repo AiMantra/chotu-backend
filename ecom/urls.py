@@ -8,10 +8,30 @@ urlpatterns = [
     path("vendor/", VendorAPI.as_view()),
     path("vendor/<uuid:pk>/", VendorUpdateAPI.as_view()),
 
+    # ************************ Contact Us Url ************************
+
+    path("contactform/", ContactFormAPI.as_view()),
+    path("contactform/<str:pk>/", ContactFormUpdateAPI.as_view()),
+    path(
+        "contactformfilter/<str:start_date>/<str:end_date>/<str:replied>/",
+        ContactFormFilterAPI.as_view(),
+    ),
+
+       # ? ************************ Address Url ************************
+    path("address/",AddressAPI.as_view()),
+    path("addressaddmany/",AddressAddMultiple.as_view()),
+    path("addressupdate/<str:pk>/",AddressUpdateAPI.as_view()),
+ 
+
     # ? ************************ Customer Url ************************
     path("customer/",CustomerAPI.as_view()),
     path("allcustomer/",AllCustomerDataAPI.as_view()),
     path("customerupdate/<str:pk>/",CustomerUpdateAPI.as_view()),
+
+    # ? ************************ Services Url ************************
+
+    path("services/", ServicesAPI.as_view()),
+    path("services/<str:pk>/", ServicesUpdateAPI.as_view()),
 
     # ? ************************ Coupon Url ************************
     path("coupon/",CouponAPI.as_view()),
@@ -25,6 +45,13 @@ urlpatterns = [
     # ************************ Product Url ************************
     path("product/", ProductAPI.as_view()),
     path("product/<uuid:pk>/", ProductUpdateAPI.as_view()),
+    path("productbyid/<uuid:pk>/", ProductGetbyIDAPI.as_view()),
+    path("product/<str:vendors>/", ProductFilterAPI.as_view()),
+
+    path("productimage/", ProductImageAPI.as_view()),
+    path("productimageupdate/<uuid:pk>/", ProductImageUpdateAPI.as_view()),
+    path("productimageview/<uuid:pk>/", ProductDetailView.as_view()),
+    
 
     # ************************ Order Url ************************
     path("order/", OrderAPI.as_view()),

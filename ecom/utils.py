@@ -29,3 +29,11 @@ class UserGenderEnum(Enum):
     @classmethod
     def choices(cls):
         return [(key.value, key.name) for key in cls]
+
+class TypeEnum(Enum):
+    contactus ="contact us"
+    query="query"
+
+    @classmethod
+    def choices(cls):
+        return [(key.value, key.name) for key in cls]

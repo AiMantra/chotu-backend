@@ -37,6 +37,104 @@ class VendorUpdateAPI(APIView):
         query.delete()
         return Response(f"Vendor {query} Deleted")
 
+
+
+class ContactFormAPI(APIView):
+    def get(self, request):
+        try:
+           
+            query = ContactForm.objects.all()
+            serializer = ContactFormSerializer(query, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(f'Error Occured Due to {e}',status=status.HTTP_400_BAD_REQUEST)
+        
+    def post(self, request):
+        data=request.data
+        serializer = ContactFormSerializer(data=data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+
+class ContactFormUpdateAPI(APIView):
+    def put(self, request, pk):
+        data=request.data
+        query = ContactForm.objects.get(pk=pk)
+        serializer = ContactFormSerializer(query, data=data, partial=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def delete(self, request, pk):
+        query = ContactForm.objects.get(pk=pk)
+        query.delete()
+        return Response(f'ContactForm with ID {query} Deleted')
+
+class ContactFormFilterAPI(APIView):
+    def get(self, request,start_date,end_date,replied ):
+        query = ContactForm.objects.all()
+
+        if  start_date!= "null":
+            query = query.filter(reply_date__gte=start_date)
+
+        if  end_date!= "null":
+            query = query.filter(reply_date__lte=end_date)
+
+        if  replied!= "null":
+            query = query.filter(replied=replied)
+
+        serializer = ContactFormSerializer (query, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AddressAPI(APIView):
+    def get(self, request):
+        try:
+            query = Address.objects.all()
+            serializer = AddressSerializer(query, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                f"Error Occured Due to {e}", status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def post(self, request):
+        data = request.data
+        serializer = AddressSerializer(data=data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AddressUpdateAPI(APIView):
+    def put(self, request, pk):
+        data = request.data
+        query = Address.objects.get(pk=pk)
+        serializer = AddressSerializer(query, data=data, partial=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, pk):
+        query = Address.objects.get(pk=pk)
+        query.delete()
+        return Response(f"Address {query} Deleted")
+
+
+class AddressAddMultiple(APIView):
+    def post(self, request):
+        data = request.data
+        serializer = AddressSerializer(data=data, many=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class AllCustomerDataAPI(APIView):
     def get(self, request):
         try:
@@ -83,6 +181,40 @@ class CustomerUpdateAPI(APIView):
         query = Customer.objects.get(pk=pk)
         query.delete()
         return Response(f"Customer {query} Deleted")
+
+
+class ServicesAPI(APIView):
+    def get(self, request):
+        try:
+            query = Services.objects.all()
+            serializer = ServicesSerializer(query, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(f'Error Occured Due to {e}',status=status.HTTP_400_BAD_REQUEST)
+        
+    def post(self, request):
+        data=request.data
+        serializer = ServicesSerializer(data=data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ServicesUpdateAPI(APIView):
+    def put(self, request, pk):
+        data=request.data
+        query = Services.objects.get(pk=pk)
+        serializer = ServicesSerializer(query, data=data, partial=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def delete(self, request, pk):
+        query = Services.objects.get(pk=pk)
+        query.delete()
+        return Response(f'Services with ID {query} Deleted')
 
 class AllCouponDataAPI(APIView):
     def get(self, request):
@@ -196,6 +328,68 @@ class ProductUpdateAPI(APIView):
         query = Product.objects.get(pk=pk)
         query.delete()
         return Response(f"Product {query} Deleted")
+
+class ProductGetbyIDAPI(APIView):
+    def get(self, request, pk):
+        query = Product.objects.get(id=pk)
+        serializer = ProductSerializer(query)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ProductFilterAPI(APIView):
+    def get(self, request, vendors ):
+        query = Product.objects.all()
+
+        if  vendors!= "null":
+            query = query.filter(vendors=vendors)
+
+        serializer = ProductSerializer(query, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ProductImageAPI(APIView):
+    def get(self, request):
+        try:
+            query = ProductImage.objects.all()
+            serializer = ProductImageSerializer(query, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(f'Error Occured Due to {e}',status=status.HTTP_400_BAD_REQUEST)
+        
+    def post(self, request):
+        data=request.data
+        serializer = ProductImageSerializer(data=data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ProductImageUpdateAPI(APIView):
+    def put(self, request, pk):
+        data=request.data
+        query = ProductImage.objects.get(pk=pk)
+        serializer = ProductImageSerializer(query, data=data, partial=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def delete(self, request, pk):
+        query = ProductImage.objects.get(pk=pk)
+        query.delete()
+        return Response(f'ProductImage with ID {query} Deleted')
+
+class ProductDetailView(APIView):
+    def get(self, request, pk):
+        try:
+            product = Product.objects.prefetch_related('product_images_product').get(pk=pk)
+        
+        
+            serializer = ProductByProductSerializer(product)
+            return Response(serializer.data)
+
+        except Product.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
 
 class OrderAPI(APIView):
     def get(self, request):
