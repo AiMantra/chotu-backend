@@ -31,15 +31,24 @@ class Customer(models.Model):
     street = models.CharField(max_length=150,null=True,blank=True)
     landmark = models.CharField(max_length=50, null=True, blank=True)
     city = models.CharField(max_length=20, null=True, blank=True)
-    district = models.CharField(max_length=50, null=True, blank=True)
-    state = models.CharField(max_length=20, null=True, blank=True)
-    pincode = models.IntegerField(null=True, blank=True)
+    district = models.CharField(max_length=50, null=True, blank=True) # ! not required in this project
+    state = models.CharField(max_length=20, null=True, blank=True) # ! not required in this project
+    pincode = models.IntegerField(null=True, blank=True) 
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
 
-# Categories for grocery and food
+# Services for grocery and food
+class Services(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
+    name = models.CharField(max_length=100, unique=True, null=False, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+# Categories for item inside Services
 class Category(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
     name = models.CharField(max_length=100, unique=True, null=False, blank=False)
