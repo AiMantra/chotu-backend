@@ -3,7 +3,46 @@ from .models import *
 from .serializers import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
+
 # Create your views here.
+
+
+class SocietyAPI(APIView):
+    def get(self, request):
+        try:
+            query = Society.objects.all()
+            serializer = SocietySerializer(query, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                f"Error Occurred Due to {e}", status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def post(self, request):
+        data = request.data
+        serializer = SocietySerializer(data=data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class SocietyUpdateAPI(APIView):
+    def put(self, request, pk):
+        data = request.data
+        query = Society.objects.get(pk=pk)
+        serializer = SocietySerializer(query, data=data, partial=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, pk):
+        query = Society.objects.get(pk=pk)
+        query.delete()
+        return Response(f"Society {query} Deleted")
+
 
 class VendorAPI(APIView):
     def get(self, request):
@@ -12,7 +51,9 @@ class VendorAPI(APIView):
             serializer = VendorSerializer(query, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response(f"Error Occurred Due to {e}", status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                f"Error Occurred Due to {e}", status=status.HTTP_400_BAD_REQUEST
+            )
 
     def post(self, request):
         data = request.data
@@ -21,6 +62,7 @@ class VendorAPI(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class VendorUpdateAPI(APIView):
     def put(self, request, pk):
@@ -38,55 +80,57 @@ class VendorUpdateAPI(APIView):
         return Response(f"Vendor {query} Deleted")
 
 
-
 class ContactFormAPI(APIView):
     def get(self, request):
         try:
-           
+
             query = ContactForm.objects.all()
             serializer = ContactFormSerializer(query, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response(f'Error Occured Due to {e}',status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                f"Error Occured Due to {e}", status=status.HTTP_400_BAD_REQUEST
+            )
+
     def post(self, request):
-        data=request.data
+        data = request.data
         serializer = ContactFormSerializer(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-        
+
 
 class ContactFormUpdateAPI(APIView):
     def put(self, request, pk):
-        data=request.data
+        data = request.data
         query = ContactForm.objects.get(pk=pk)
         serializer = ContactFormSerializer(query, data=data, partial=True)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     def delete(self, request, pk):
         query = ContactForm.objects.get(pk=pk)
         query.delete()
-        return Response(f'ContactForm with ID {query} Deleted')
+        return Response(f"ContactForm with ID {query} Deleted")
+
 
 class ContactFormFilterAPI(APIView):
-    def get(self, request,start_date,end_date,replied ):
+    def get(self, request, start_date, end_date, replied):
         query = ContactForm.objects.all()
 
-        if  start_date!= "null":
+        if start_date != "null":
             query = query.filter(reply_date__gte=start_date)
 
-        if  end_date!= "null":
+        if end_date != "null":
             query = query.filter(reply_date__lte=end_date)
 
-        if  replied!= "null":
+        if replied != "null":
             query = query.filter(replied=replied)
 
-        serializer = ContactFormSerializer (query, many=True)
+        serializer = ContactFormSerializer(query, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -134,6 +178,7 @@ class AddressAddMultiple(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class AllCustomerDataAPI(APIView):
     def get(self, request):
@@ -190,10 +235,12 @@ class ServicesAPI(APIView):
             serializer = ServicesSerializer(query, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response(f'Error Occured Due to {e}',status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                f"Error Occured Due to {e}", status=status.HTTP_400_BAD_REQUEST
+            )
+
     def post(self, request):
-        data=request.data
+        data = request.data
         serializer = ServicesSerializer(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -203,18 +250,19 @@ class ServicesAPI(APIView):
 
 class ServicesUpdateAPI(APIView):
     def put(self, request, pk):
-        data=request.data
+        data = request.data
         query = Services.objects.get(pk=pk)
         serializer = ServicesSerializer(query, data=data, partial=True)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     def delete(self, request, pk):
         query = Services.objects.get(pk=pk)
         query.delete()
-        return Response(f'Services with ID {query} Deleted')
+        return Response(f"Services with ID {query} Deleted")
+
 
 class AllCouponDataAPI(APIView):
     def get(self, request):
@@ -263,6 +311,7 @@ class CouponUpdateAPI(APIView):
         query.delete()
         return Response(f"Coupon {query} Deleted")
 
+
 # Category CRUD APIs
 class CategoryAPI(APIView):
     def get(self, request):
@@ -271,7 +320,9 @@ class CategoryAPI(APIView):
             serializer = CategorySerializer(query, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response(f"Error Occurred Due to {e}", status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                f"Error Occurred Due to {e}", status=status.HTTP_400_BAD_REQUEST
+            )
 
     def post(self, request):
         data = request.data
@@ -280,6 +331,7 @@ class CategoryAPI(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class CategoryUpdateAPI(APIView):
     def put(self, request, pk):
@@ -296,6 +348,7 @@ class CategoryUpdateAPI(APIView):
         query.delete()
         return Response(f"Category {query} Deleted")
 
+
 # Product CRUD APIs
 class ProductAPI(APIView):
     def get(self, request):
@@ -304,7 +357,9 @@ class ProductAPI(APIView):
             serializer = ProductSerializer(query, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response(f"Error Occurred Due to {e}", status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                f"Error Occurred Due to {e}", status=status.HTTP_400_BAD_REQUEST
+            )
 
     def post(self, request):
         data = request.data
@@ -313,6 +368,7 @@ class ProductAPI(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class ProductUpdateAPI(APIView):
     def put(self, request, pk):
@@ -329,21 +385,24 @@ class ProductUpdateAPI(APIView):
         query.delete()
         return Response(f"Product {query} Deleted")
 
+
 class ProductGetbyIDAPI(APIView):
     def get(self, request, pk):
         query = Product.objects.get(id=pk)
         serializer = ProductSerializer(query)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class ProductFilterAPI(APIView):
-    def get(self, request, vendors ):
+    def get(self, request, vendors):
         query = Product.objects.all()
 
-        if  vendors!= "null":
+        if vendors != "null":
             query = query.filter(vendors=vendors)
 
         serializer = ProductSerializer(query, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class ProductImageAPI(APIView):
     def get(self, request):
@@ -352,10 +411,12 @@ class ProductImageAPI(APIView):
             serializer = ProductImageSerializer(query, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response(f'Error Occured Due to {e}',status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                f"Error Occured Due to {e}", status=status.HTTP_400_BAD_REQUEST
+            )
+
     def post(self, request):
-        data=request.data
+        data = request.data
         serializer = ProductImageSerializer(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -365,25 +426,27 @@ class ProductImageAPI(APIView):
 
 class ProductImageUpdateAPI(APIView):
     def put(self, request, pk):
-        data=request.data
+        data = request.data
         query = ProductImage.objects.get(pk=pk)
         serializer = ProductImageSerializer(query, data=data, partial=True)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     def delete(self, request, pk):
         query = ProductImage.objects.get(pk=pk)
         query.delete()
-        return Response(f'ProductImage with ID {query} Deleted')
+        return Response(f"ProductImage with ID {query} Deleted")
+
 
 class ProductDetailView(APIView):
     def get(self, request, pk):
         try:
-            product = Product.objects.prefetch_related('product_images_product').get(pk=pk)
-        
-        
+            product = Product.objects.prefetch_related("product_images_product").get(
+                pk=pk
+            )
+
             serializer = ProductByProductSerializer(product)
             return Response(serializer.data)
 
@@ -398,7 +461,9 @@ class OrderAPI(APIView):
             serializer = OrderSerializer(query, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response(f"Error Occurred Due to {e}", status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                f"Error Occurred Due to {e}", status=status.HTTP_400_BAD_REQUEST
+            )
 
     def post(self, request):
         data = request.data
@@ -407,6 +472,7 @@ class OrderAPI(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class OrderUpdateAPI(APIView):
     def put(self, request, pk):
@@ -429,6 +495,7 @@ class OrderUpdateAPI(APIView):
         except Order.DoesNotExist:
             return Response("Order not found", status=status.HTTP_404_NOT_FOUND)
 
+
 class OrderItemAPI(APIView):
     def get(self, request):
         try:
@@ -436,7 +503,9 @@ class OrderItemAPI(APIView):
             serializer = OrderItemSerializer(query, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response(f"Error Occurred Due to {e}", status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                f"Error Occurred Due to {e}", status=status.HTTP_400_BAD_REQUEST
+            )
 
     def post(self, request):
         data = request.data
@@ -445,6 +514,7 @@ class OrderItemAPI(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class OrderItemUpdateAPI(APIView):
     def put(self, request, pk):
@@ -467,6 +537,7 @@ class OrderItemUpdateAPI(APIView):
         except OrderItem.DoesNotExist:
             return Response("OrderItem not found", status=status.HTTP_404_NOT_FOUND)
 
+
 # Ledger CRUD API
 class LedgerAPI(APIView):
     def get(self, request):
@@ -475,7 +546,9 @@ class LedgerAPI(APIView):
             serializer = LedgerSerializer(query, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response(f"Error Occurred Due to {e}", status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                f"Error Occurred Due to {e}", status=status.HTTP_400_BAD_REQUEST
+            )
 
     def post(self, request):
         data = request.data
@@ -484,6 +557,7 @@ class LedgerAPI(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class LedgerUpdateAPI(APIView):
     def put(self, request, pk):

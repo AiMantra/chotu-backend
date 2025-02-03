@@ -1,4 +1,4 @@
-
+venv
 myVenv
 *.pyc
 __pycache__
