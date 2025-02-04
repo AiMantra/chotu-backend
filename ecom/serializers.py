@@ -36,7 +36,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 class AllCustomerDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = ["id", "name", "pos"]
+        fields = ["id", "name", "phone_number"]
 
 
 class ServicesSerializer(serializers.ModelSerializer):

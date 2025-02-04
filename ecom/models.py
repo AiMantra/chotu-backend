@@ -40,6 +40,36 @@ class Vendors(models.Model):
         return str(self.id)
 
 
+class VendorsProduct(models.Model):
+    id = models.UUIDField(
+        default=uuid.uuid4, primary_key=True, unique=True, editable=False
+    )
+
+    vendor = models.ForeignKey(
+        Vendors,
+        on_delete=models.CASCADE,
+        related_name="vendors_detail",
+        null=True,
+        blank=True,
+    )
+    
+    product = models.ForeignKey(
+        "Product",
+        on_delete=models.CASCADE,
+        related_name="product_vendor",
+        null=True,
+        blank=True,
+    )
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    stock = models.IntegerField(default=0)
+    discount = models.CharField(max_length=50, null=True, blank=True)  
+    gst = models.CharField(max_length=50, null=True, blank=True)  
+
+    def __str__(self):
+        return str(self.id)
+  
+
+
 class ContactForm(models.Model):
 
     id = models.UUIDField(
@@ -65,6 +95,13 @@ class Address(models.Model):
     id = models.UUIDField(
         default=uuid.uuid4, unique=True, editable=False, primary_key=True
     )
+    customer = models.ForeignKey(
+        "Customer",
+        on_delete=models.CASCADE,
+        related_name="customer_address",
+        null=True,
+        blank=True,
+    )
     block_no = models.CharField(max_length=10, null=True, blank=True)
     house_flat_no = models.CharField(max_length=10, null=True, blank=True)
     street = models.CharField(max_length=150, null=True, blank=True)
@@ -79,6 +116,13 @@ class Customer(models.Model):
     id = models.UUIDField(
         default=uuid.uuid4, primary_key=True, unique=True, editable=False
     )
+    coupon = models.ForeignKey(
+        "Coupan",
+        on_delete=models.CASCADE,
+        related_name="customer_coupan",
+        null=True,
+        blank=True,
+    )
     name = models.CharField(max_length=250, null=True, blank=True)
     email = models.EmailField(unique=True, null=True, blank=True)
     phone_number = models.CharField(max_length=15, unique=True, null=True, blank=True)
@@ -89,13 +133,6 @@ class Customer(models.Model):
         max_length=10, null=True, blank=True, choices=UserGenderEnum.choices()
     )
     dob = models.DateField(null=True, blank=True)
-    address = models.ForeignKey(
-        Address,
-        on_delete=models.CASCADE,
-        related_name="customer_address",
-        null=True,
-        blank=True,
-    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -126,6 +163,13 @@ class Category(models.Model):
     id = models.UUIDField(
         default=uuid.uuid4, primary_key=True, unique=True, editable=False
     )
+    coupon = models.ForeignKey(
+        "Coupon",
+        on_delete=models.CASCADE,
+        related_name="category_coupan",
+        null=True,
+        blank=True,
+    )
     name = models.CharField(max_length=100, unique=True, null=True, blank=True)
     pic = models.ImageField(upload_to="category", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -139,22 +183,15 @@ class Coupon(models.Model):
         default=uuid.uuid4, primary_key=True, unique=True, editable=False
     )
     code = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    vendor = models.ForeignKey(
+        Vendors,
+        on_delete=models.CASCADE,
+        related_name="vendors_coupon",
+        null=True,
+        blank=True,
+    )
     discount_type = models.CharField(
         max_length=20, choices=DiscountTypeEnum.choices(), null=True, blank=True
-    )
-    customer = models.ForeignKey(
-        Customer,
-        on_delete=models.CASCADE,
-        related_name="customer_coupan",
-        null=True,
-        blank=True,
-    )
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.CASCADE,
-        related_name="category_coupan",
-        null=True,
-        blank=True,
     )
     discount_value = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
@@ -215,12 +252,6 @@ class Product(models.Model):
         null=True,
         blank=True,
     )
-    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    stock = models.IntegerField(default=0)
-    discount = models.ForeignKey(
-        Coupon, on_delete=models.CASCADE, related_name="orders", null=True, blank=True
-    )
-    gst = models.CharField(max_length=50, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
