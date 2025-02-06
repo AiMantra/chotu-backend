@@ -394,11 +394,14 @@ class ProductGetbyIDAPI(APIView):
 
 
 class ProductFilterAPI(APIView):
-    def get(self, request, vendors):
+    def get(self, request, vendors, category):
         query = Product.objects.all()
 
         if vendors != "null":
             query = query.filter(vendors=vendors)
+
+        if category != "null":
+            query = query.filter(category=category)
 
         serializer = ProductSerializer(query, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

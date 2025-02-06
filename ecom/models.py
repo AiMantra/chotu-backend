@@ -117,7 +117,7 @@ class Customer(models.Model):
         default=uuid.uuid4, primary_key=True, unique=True, editable=False
     )
     coupon = models.ForeignKey(
-        "Coupan",
+        "Coupon",
         on_delete=models.CASCADE,
         related_name="customer_coupan",
         null=True,

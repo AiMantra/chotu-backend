@@ -37,7 +37,7 @@ urlpatterns = [
     path("product/", ProductAPI.as_view()),
     path("product/<uuid:pk>/", ProductUpdateAPI.as_view()),
     path("productbyid/<uuid:pk>/", ProductGetbyIDAPI.as_view()),
-    path("product/<str:vendors>/", ProductFilterAPI.as_view()),
+    path("product/<str:vendors>/<str:category>/", ProductFilterAPI.as_view()),
     path("productimage/", ProductImageAPI.as_view()),
     path("productimageupdate/<uuid:pk>/", ProductImageUpdateAPI.as_view()),
     path("productimageview/<uuid:pk>/", ProductDetailView.as_view()),
